@@ -1,0 +1,24 @@
+# Main Branch Push 발생 시 AWS ECR Push Action을 수행 ( AWS ECS 관련 ENV, Job 삭제 )
+name: Automerge				
+on:								                                                       # WorkFlow 동작 트리거영역
+  pull_request:							                                             # "main" Branche에서 pull_request 발생 시 WorkFlow 동작
+    branches:							     
+      - main
+    types:
+      - labeled
+
+jobs:									
+  automerge:							                                               # Automerge Job 영역 시작
+    if: ${{ github.event.label.name == 'automerge' }}		                 # Git Hub Event Label 정보가 "automerge"로 설정 되어 발생 된 Job 수행
+    env:
+      BASE_BRANCH: ${{ github.event.pull_request.head.ref }}	           # Pull Request를 진행 한 Branch 정보를 가져와 BASE_BRANCH 환경변수로 등록
+    runs-on: ubuntu-latest					                                     # Runner 지정 ( Job-Container )
+    steps:
+      - name: automerge						                                       # Pull Request AutoMerge 수행
+        uses: "pascalgn/automerge-action@v0.14.2"		                     # pascalgn/automerge-action@v0.14.2 Action 사용
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"	                   # GITHUB_TOKEN Secrets 환경변수를 이용하여 GITHUB_TOKEN 환경변수 정의
+
+- Commit Message : Automerge.yml
+- Extended Description : CI/CD AutoMerge
+- Commit Directly the main branch
